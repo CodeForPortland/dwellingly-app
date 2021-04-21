@@ -10,6 +10,7 @@ import { faArchive } from '@fortawesome/free-solid-svg-icons';
 import Toast from '../../utils/toast';
 import Icon from '../../components/icon/Icon';
 import Modal from '../../components/Modal';
+import { mobileWidth } from '../../constants/index.js';
 import { useMediaQueries } from '@react-hook/media-query';
 import './properties.scss';
 
@@ -28,8 +29,7 @@ const columns = [{
   text: 'Name',
   sort: true,
   headerStyle: () => {
- 548   return { width: "20%" };
-
+    return { width: "20%" };
   }
 }, {
   dataField: 'propertyManagerNames',
@@ -137,9 +137,9 @@ export const Properties = () => {
   const [nonSelectableRows, setNonSelectableRows] = useState([]);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { matches, matchesAny, matchesAll } = useMediaQueries({
+  const { matchesAll } = useMediaQueries({
     screen: 'screen',
-    width: '(max-width: 640px)'
+    width: `(max-width: ${mobileWidth})`
   });
 
   const handleToggleArchived = () => {

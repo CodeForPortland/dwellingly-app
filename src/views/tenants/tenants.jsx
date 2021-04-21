@@ -12,6 +12,8 @@ import Search from "../../components/Search/index";
 import { ShowHideSwitch } from '../../components/ShowHideSwitch';
 import Modal from '../../components/Modal';
 import { columns } from './tenantsFormStructure';
+import { mobileWidth } from '../../constants/index.js';
+import { useMediaQueries } from '@react-hook/media-query';
 import './tenants.scss';
 
 const makeAuthHeaders = ({ user }) => ({ headers: { 'Authorization': `Bearer ${user.accessJwt}` } });
