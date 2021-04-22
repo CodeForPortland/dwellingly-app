@@ -138,6 +138,52 @@ export class Tickets extends Component {
     }
   }];
 
+  mobileColumns = [{
+    dataField: 'id',
+    text: 'Ticket',
+    sort: true,
+    formatter: (cell, row) => <button
+      onClick={() => this.toggleTicketModal(row)}
+      className="link-button cell-align-left">
+      <p className="cell-header">{row.tenant}</p>
+      <p className="cell-subheader">{row.issue}</p>
+    </button>,
+    headerStyle: () => {
+      return { width: "40%" };
+    }
+  }, {
+    dataField: 'sender',
+    text: 'Sender',
+    sort: true,
+    headerStyle: () => {
+      return { width: "40%" };
+    }
+  }, {
+    dataField: 'assigned',
+    text: 'Assigned To',
+    sort: true,
+    headerStyle: () => {
+      return { width: "20%" };
+    }
+  }];
+
+  expandRow = {
+    renderer: row => (
+      <div>
+        <label for="status">Status</label>
+        <p id="status">{row.status}</p>
+        <br />
+
+        <label for="created-at">Created</label>
+        <p id="created-at">{row.created_at}</p>
+        <br />
+
+        <label for="updated-at">Updated</label>
+        <p id="updated-at">{row.updated_at}</p>
+      </div>
+    ),
+    showExpandColumn: true
+  };
   getTickets = (context) => {
     axios.get(`/api/tickets`, { headers: { "Authorization": `Bearer ${context.user.accessJwt}` } })
       .then((response) => {

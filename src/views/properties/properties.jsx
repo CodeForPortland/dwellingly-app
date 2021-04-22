@@ -74,7 +74,6 @@ const mobileColumns = [{
   sort: true,
   headerStyle: () => {
     return { width: "45%" };
-
   }
 }, {
   dataField: 'address',

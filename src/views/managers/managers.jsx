@@ -71,48 +71,46 @@ const columns = [
   },
 ];
 
-const mobileColumns = [
-  {
-    dataField: "fullName",
-    formatter: (cell, row) => {
-      return (
-        <Link key={row.id} to={`/manage/managers/${row.id}`}>
-          {row.fullName}
-        </Link>
-      );
-    },
-    text: "Name",
-    sort: true,
-    headerStyle: () => {
-      return { width: "45%" };
-    },
+const mobileColumns = [{
+  dataField: "fullName",
+  formatter: (cell, row) => {
+    return (
+      <Link key={row.id} to={`/manage/managers/${row.id}`}>
+        {row.fullName}
+      </Link>
+    );
   },
-  {
-    dataField: "properties",
-    formatter: (cell, row) => {
-      return (
-        <ul>
-          {row.properties.map((property) => (
-            <li key={property.name}>{property.name}</li>
-          ))}
-        </ul>
-      );
-    },
-    text: "Properties",
-    sort: true,
-    headerStyle: () => {
-      return { width: "45%" };
-    },
+  text: "Name",
+  sort: true,
+  headerStyle: () => {
+    return { width: "45%" };
   },
-  {
-    dataField: "status",
-    text: "Status",
-    sort: true,
-    headerStyle: () => {
-      return { width: "10%" };
-    },
+},
+{
+  dataField: "properties",
+  formatter: (cell, row) => {
+    return (
+      <ul>
+        {row.properties.map((property) => (
+          <li key={property.name}>{property.name}</li>
+        ))}
+      </ul>
+    );
   },
-];
+  text: "Properties",
+  sort: true,
+  headerStyle: () => {
+    return { width: "45%" };
+  },
+},
+{
+  dataField: "status",
+  text: "Status",
+  sort: true,
+  headerStyle: () => {
+    return { width: "10%" };
+  },
+}];
 
 const expandRow = {
   renderer: row => (
