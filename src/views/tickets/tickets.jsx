@@ -62,6 +62,135 @@ const options = {
   pageButtonRenderer
 };
 
+
+
+const makeHeader = (context) => {
+  return { Authorization: `Bearer ${context.user.accessJwt}` };
+};
+const retrievedUserContext = useContext(UserContext);
+const axiosHeader = makeHeader(retrievedUserContext);
+
+
+const columns = [{
+  dataField: 'id',
+  text: 'Ticket',
+  sort: true,
+  formatter: (cell, row) => <button
+    onClick={() => toggleTicketModal(row)}
+    className="link-button cell-align-left">
+    <p className="cell-header">{row.tenant}</p>
+    <p className="cell-subheader">{row.issue}</p>
+  </button>,
+  headerStyle: () => {
+    return { width: "20%" };
+  }
+}, {
+  dataField: 'sender',
+  text: 'Sender',
+  sort: true,
+  headerStyle: () => {
+    return { width: "20%" };
+  }
+}, {
+  dataField: 'assigned',
+  text: 'Assigned To',
+  sort: true,
+  headerStyle: () => {
+    return { width: "20%" };
+  }
+}, {
+  dataField: 'status',
+  text: 'Status',
+  sort: true,
+  headerStyle: () => {
+    return { width: "10%" };
+  }
+}, {
+  dataField: 'created_at',
+  text: 'Created',
+  sort: true,
+  headerStyle: () => {
+    return { width: "15%" };
+  }
+}, {
+  dataField: 'updated_at',
+  text: 'Updated',
+  sort: true,
+  headerStyle: () => {
+    return { width: "15%" };
+  }
+}];
+
+const mobileColumns = [{
+  dataField: 'id',
+  text: 'Ticket',
+  sort: true,
+  formatter: (cell, row) => <button
+    onClick={() => toggleTicketModal(row)}
+    className="link-button cell-align-left">
+    <p className="cell-header">{row.tenant}</p>
+    <p className="cell-subheader">{row.issue}</p>
+  </button>,
+  headerStyle: () => {
+    return { width: "40%" };
+  }
+}, {
+  dataField: 'sender',
+  text: 'Sender',
+  sort: true,
+  headerStyle: () => {
+    return { width: "40%" };
+  }
+}, {
+  dataField: 'assigned',
+  text: 'Assigned To',
+  sort: true,
+  headerStyle: () => {
+    return { width: "20%" };
+  }
+}];
+
+const expandRow = {
+  renderer: row => (
+    <div>
+      <label for="status">Status</label>
+      <p id="status">{row.status}</p>
+      <br />
+
+      <label for="created-at">Created</label>
+      <p id="created-at">{row.created_at}</p>
+      <br />
+
+      <label for="updated-at">Updated</label>
+      <p id="updated-at">{row.updated_at}</p>
+    </div>
+  ),
+  showExpandColumn: true
+};
+
+const getTickets = (context) => {
+  axios.get(`/api/tickets`, { headers: { "Authorization": `Bearer ${context.user.accessJwt}` } })
+    .then((response) => {
+      setTicketsData({ tickets: response.data.tickets });
+    })
+    .catch((error) => {
+      Toast(error.message, "error");
+      console.log(error);
+    });
+};
+
+const setIsFilteredTicketsFalse = async () => {
+  await setIsFiltered(false);
+};
+
+
+const setOutputState = async (output, isTrue) => {
+  await setFilteredTickets(output);
+  setIsFiltered(isTrue);
+};
+
+
+
 const Tickets = () => {
   const [ticketsData, setTicketsData] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
@@ -72,145 +201,10 @@ const Tickets = () => {
     screen: 'screen',
     width: `(max-width: 950px)`
   });
-
-  const makeHeader = (context) => {
-    return { Authorization: `Bearer ${context.user.accessJwt}` };
-  };
-  const retrievedUserContext = useContext(UserContext);
-  const axiosHeader = makeHeader(retrievedUserContext);
-
-  const handleSelectRow = (ticket) => setSelectedTickets([...selectedTickets, ticket]);
-  const handleDeselectRow = (ticket) => setSelectedTickets(selectedTickets.filter(p => p.id !== ticket.id));
-  const handleSelectAll = setSelectedTickets;
-  const handleDeselectAll = (_) => setSelectedTickets([]);
-
-  const toggleTicketModal = (ticket) => {
-    setSelectedTickets(selectedTickets ? null : ticket);
-  };
-
-  const columns = [{
-    dataField: 'id',
-    text: 'Ticket',
-    sort: true,
-    formatter: (cell, row) => <button
-      onClick={() => toggleTicketModal(row)}
-      className="link-button cell-align-left">
-      <p className="cell-header">{row.tenant}</p>
-      <p className="cell-subheader">{row.issue}</p>
-    </button>,
-    headerStyle: () => {
-      return { width: "20%" };
-    }
-  }, {
-    dataField: 'sender',
-    text: 'Sender',
-    sort: true,
-    headerStyle: () => {
-      return { width: "20%" };
-    }
-  }, {
-    dataField: 'assigned',
-    text: 'Assigned To',
-    sort: true,
-    headerStyle: () => {
-      return { width: "20%" };
-    }
-  }, {
-    dataField: 'status',
-    text: 'Status',
-    sort: true,
-    headerStyle: () => {
-      return { width: "10%" };
-    }
-  }, {
-    dataField: 'created_at',
-    text: 'Created',
-    sort: true,
-    headerStyle: () => {
-      return { width: "15%" };
-    }
-  }, {
-    dataField: 'updated_at',
-    text: 'Updated',
-    sort: true,
-    headerStyle: () => {
-      return { width: "15%" };
-    }
-  }];
-
-  const mobileColumns = [{
-    dataField: 'id',
-    text: 'Ticket',
-    sort: true,
-    formatter: (cell, row) => <button
-      onClick={() => toggleTicketModal(row)}
-      className="link-button cell-align-left">
-      <p className="cell-header">{row.tenant}</p>
-      <p className="cell-subheader">{row.issue}</p>
-    </button>,
-    headerStyle: () => {
-      return { width: "40%" };
-    }
-  }, {
-    dataField: 'sender',
-    text: 'Sender',
-    sort: true,
-    headerStyle: () => {
-      return { width: "40%" };
-    }
-  }, {
-    dataField: 'assigned',
-    text: 'Assigned To',
-    sort: true,
-    headerStyle: () => {
-      return { width: "20%" };
-    }
-  }];
-
-  const expandRow = {
-    renderer: row => (
-      <div>
-        <label for="status">Status</label>
-        <p id="status">{row.status}</p>
-        <br />
-
-        <label for="created-at">Created</label>
-        <p id="created-at">{row.created_at}</p>
-        <br />
-
-        <label for="updated-at">Updated</label>
-        <p id="updated-at">{row.updated_at}</p>
-      </div>
-    ),
-    showExpandColumn: true
-  };
-
-  const getTickets = (context) => {
-    axios.get(`/api/tickets`, { headers: { "Authorization": `Bearer ${context.user.accessJwt}` } })
-      .then((response) => {
-        setTicketsData({ tickets: response.data.tickets });
-      })
-      .catch((error) => {
-        Toast(error.message, "error");
-        console.log(error);
-      });
-  };
-
-  const setIsFilteredTicketsFalse = async () => {
-    await setIsFiltered(false);
-  };
-
-
-  const setOutputState = async (output, isTrue) => {
-    await setFilteredTickets(output);
-    setIsFiltered(isTrue);
-  };
-
   useEffect(() => {
     setIsLoading(true);
     getTickets(axiosHeader, setTicketsData, setIsLoading);
   }, []);
-
   return (
     <div className='tickets main-container'>
       <div className="section-header">
