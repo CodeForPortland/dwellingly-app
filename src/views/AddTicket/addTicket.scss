@@ -1,0 +1,30 @@
+@import '../../scss/variables';
+
+.add-ticket {
+  .form-container {
+    max-width: 80%;
+  }
+  
+  .button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 210px;
+    margin-top: 55px;
+    margin-left: -5px;
+    padding: 0;
+  }
+
+  .bordered-section {
+    border: 1px $lightGray;
+    border-radius: 10px;
+
+    input {
+      margin: 15px;
+    }
+  }
+
+  .form-section {
+    padding-bottom: 20px;
+  }
+}
