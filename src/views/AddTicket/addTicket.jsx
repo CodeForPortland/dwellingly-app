@@ -16,10 +16,10 @@ export const AddTicket = () => {
   const [errors, setErrors] = useState([]);
   const [staffSearchText, setStaffSearchText] = useState("");
   const [staffSearchResults, setStaffSearchResults] = useState([]);
-  const [staffSelection, setstaffSelection] = useState([]);
+  const [staffSelection, setStaffSelection] = useState();
   const [tenantSearchText, setTenantSearchText] = useState("");
   const [tenantSearchResults, setTenantSearchResults] = useState([]);
-  const [tenantSelection, settenantSelection] = useState([]);
+  const [tenantSelection, settenantSelection] = useState();
   const [issueText, setIssueText] = useState("");
   const [urgency, setUrgency] = useState("");
 
@@ -61,7 +61,7 @@ export const AddTicket = () => {
    * @param {*} selectedChoice
    */
   const handleChangestaffSelection = (selectedChoice) => {
-    setstaffSelection(selectedChoice);
+    setStaffSelection(selectedChoice);
   };
 
   useEffect(() => {
@@ -99,28 +99,35 @@ export const AddTicket = () => {
    * @param {*} selectedChoice
    */
   const handleChangeTenantSelection = (selectedChoice) => {
+    clearError("tenant");
     settenantSelection(selectedChoice);
   };
 
   const handleChangeUrgency = (e) => {
+    clearError("urgency");
     setUrgency(e.target.value);
   };
 
-  const handleIssueChange = (e) => {
+  const handleChangeIssue = (e) => {
+    clearError("issueText");
     setIssueText(e.target.value);
   };
 
   const validateData = () => {
+    var hasErrors = false;
     if(!errors.includes("issueText") && !issueText) {
+      hasErrors = true;
       setErrors(errors => [...errors, "issueText"]);
     }
     if(!errors.includes("urgency") && !urgency) {
+      hasErrors = true;
       setErrors(errors => [...errors, "urgency"]);
     }
     if(!errors.includes("tenant") && !tenantSelection || tenantSelection.length < 1) {
+      hasErrors = true;
       setErrors(errors => [...errors, "tenant"]);
     }
-    if(errors.length > 0) {
+    if(hasErrors) {
       return Promise.reject();
     }
     else {
@@ -134,11 +141,11 @@ export const AddTicket = () => {
     validateData()
       .then( () => {
         var data = {
-          assignedUserID: staffSelection.key,
+          assignedUserID: (staffSelection && staffSelection.length > 0) ? staffSelection[0].key : null,
           issue: issueText,
           senderID: context.identity,
           status: "New",
-          tenantID: tenantSelection.key,
+          tenantID: tenantSelection[0].key,
           urgency: urgency
         };
         axios.post('/api/tickets', data, makeAuthHeaders(context))
@@ -152,7 +159,14 @@ export const AddTicket = () => {
             Toast(error.message, 'error');
           });
       })
+      .catch( () => {
+        setIsSubmitting(false);
+      })
   };
+
+  const clearError = (error) => {
+    setErrors(errors => errors.filter(err => err !== error));
+  }
 
   return (
     <div className="main-container">
@@ -162,22 +176,22 @@ export const AddTicket = () => {
       <div className="add-ticket">
         <div className="form-container">
           <div className="form-section">
-            <h2 className="section-title">ISSUE</h2>
+            <h2 className="section-title">ISSUE
+            {errors.includes("issueText") && <span className='error-message'> * Issue description is required</span>}</h2>
             <div className='form-row'>
               <input
                 className='column form-field'
                 type='text'
                 name='issue'
-                onChange={handleIssueChange}
+                onChange={handleChangeIssue}
                 value={issueText}
                 placeholder='Unpaid rent'
-                width='50%'
               />
-              {errors.includes("issueText") && <span className='error-message'>Issue description is required</span>}
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">URGENCY</h2>
+            <h2 className="section-title">URGENCY
+            {errors.includes("urgency") && <span className='error-message'> * Urgency is required</span>}</h2>
             <div className="bordered-section">
               <input type="radio" id="high" name="high"
                 checked={urgency === 'high'}
@@ -194,7 +208,6 @@ export const AddTicket = () => {
                 onChange={handleChangeUrgency}
                 value="low" />
               <label htmlFor="low">Low</label>
-              {errors.includes("urgency") && <span className='error-message'>Urgency is required</span>}
             </div>
           </div>
           <div className="form-section">
@@ -218,7 +231,8 @@ export const AddTicket = () => {
             </div>
           </div>
           <div className="form-section">
-            <h2 className="section-title">TENANTS</h2>
+            <h2 className="section-title">TENANTS
+            {errors.includes("tenant") && <span className='error-message'> * Please select a tenant</span>}</h2>
             <div className="typeahead-section">
               <SearchPanel
                 chips
@@ -236,7 +250,6 @@ export const AddTicket = () => {
                 shadow
               />
             </div>
-            {errors.includes("tenant") && <span className='error-message'>Please select a tenant</span>}
           </div>
           <div className="button-container">
             <Button

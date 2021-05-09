@@ -4,7 +4,12 @@
   .form-container {
     max-width: 80%;
   }
-  
+
+  .error-message {
+    font-size: .8em;
+    font-weight: 400;
+  }
+
   .button-container {
     display: flex;
     flex-direction: row;
