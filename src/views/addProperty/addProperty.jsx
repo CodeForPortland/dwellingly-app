@@ -101,9 +101,9 @@ export class AddProperty extends Component {
       <UserContext.Consumer>
         {session => {
           return (
-            <div className='main-container'>
+            <div className={`${this.props.showPageTitle ? 'main-container' :  ''}`}>
               <div>
-                <h2 className='page-title'>Add a New Property</h2>
+                {this.props.showPageTitle && <h2 className='page-title'>Add a New Property</h2>}
 
                 <Formik
                   initialValues={{
