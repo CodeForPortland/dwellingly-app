@@ -81,6 +81,7 @@ export const NavMenu = () => {
 								<MenuLink name="Tenant" href="/add/tenant" />
 								<MenuLink name="Property" href="/add/property" />
 								<MenuLink name="Property Manager" href="/add/manager" />
+								<MenuLink name="Ticket" href="/add/ticket" />
 							</div>
 
 							<MenuLink name="Manage" isBold icon={faUserCog} category="manage" />
@@ -88,9 +89,9 @@ export const NavMenu = () => {
 								<MenuLink name="Tenants" href="/manage/tenants" />
 								<MenuLink name="Properties" href="/manage/properties" />
 								<MenuLink name="Property Managers" href="/manage/managers" />
+								<MenuLink name="Tickets" href="/manage/tickets" />
 							</div>
 
-							<MenuLink name="Tickets" isBold icon={faTicketAlt} href="/tickets" />
 							<MenuLink name="JOIN Staff" isBold icon={faUserAlt} href="/staff" />
 							<MenuLink name="Emergency Numbers" isBold icon={faPhoneAlt} href="/emergency" />
 							<MenuLink name="Settings" isBold icon={faCog} href="/settings" />

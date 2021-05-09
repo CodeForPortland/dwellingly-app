@@ -39,6 +39,7 @@ import Tenant from "./views/Tenant";
 import ChangePassword from "./views/Settings/changePassword";
 import { ToastContainer } from 'react-toastify';
 import NoMatch from "./views/noMatch/noMatch";
+import { AddTicket } from "./views/AddTicket/addTicket";
 
 var refreshTimeout;
 
@@ -208,8 +209,9 @@ export class App extends React.Component {
               <PrivateRoute exact path='/dashboard' component={Dashboard} />
               <PrivateRoute exact path='/home' component={() => <Redirect to="/dashboard" />} />
               <PrivateRoute exact path='/add/tenant' component={AddTenant} />
-              <PrivateRoute exact path='/add/property' component={AddProperty} />
+              <PrivateRoute exact path='/add/property' component={() => <AddProperty showPageTitle={true}/>} />
               <PrivateRoute exact path='/add/manager' component={AddManager} />
+              <PrivateRoute exact path='/add/ticket' component={AddTicket} />
               <PrivateRoute exact path='/manage/tenants' component={Tenants} />
               <PrivateRoute exact path='/manage/tenants/:id' component={Tenant} />
               <PrivateRoute exact path='/add/emergencycontact' component={AddEmergencyContact} />
@@ -218,7 +220,7 @@ export class App extends React.Component {
               <PrivateRoute exact path='/manage/properties/:id' component={Property} />
               <PrivateRoute exact path='/manage/managers' component={Managers} />
               <PrivateRoute exact path='/manage/managers/:id' component={Manager} />
-              <PrivateRoute exact path='/tickets' component={Tickets} />
+              <PrivateRoute exact path='/manage/tickets' component={Tickets} />
               <PrivateRoute exact path='/staff' component={JoinStaff} />
               <PrivateRoute exact path='/staff/add' component={AddStaffMember} />
               <PrivateRoute exact path='/emergency' component={EmergencyContacts} />
