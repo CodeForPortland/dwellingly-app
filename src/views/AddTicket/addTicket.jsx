@@ -21,7 +21,7 @@ export const AddTicket = () => {
   const [tenantSearchResults, setTenantSearchResults] = useState([]);
   const [tenantSelection, settenantSelection] = useState();
   const [issueText, setIssueText] = useState("");
-  const [urgency, setUrgency] = useState("");
+  const [urgency, setUrgency] = useState("high");
 
   useEffect(() => {
     axios.post("/api/users/role", {
