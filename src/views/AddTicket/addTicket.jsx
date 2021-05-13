@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import { SearchPanel, SearchPanelVariant } from "react-search-panel";
-import RoleEnum from '../../Enums/RoleEnum';
 import Toast from '../../utils/toast';
 import * as axios from "axios";
 import UserContext from "../../UserContext";
@@ -14,55 +13,11 @@ export const AddTicket = () => {
   const context = useContext(UserContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState([]);
-  const [staffSearchText, setStaffSearchText] = useState("");
-  const [staffSearchResults, setStaffSearchResults] = useState([]);
-  const [staffSelection, setStaffSelection] = useState();
   const [tenantSearchText, setTenantSearchText] = useState("");
   const [tenantSearchResults, setTenantSearchResults] = useState([]);
   const [tenantSelection, settenantSelection] = useState();
   const [issueText, setIssueText] = useState("");
   const [urgency, setUrgency] = useState("high");
-
-  useEffect(() => {
-    axios.post("/api/users/role", {
-      userrole: RoleEnum.STAFF,
-      name: staffSearchText
-    }, makeAuthHeaders(context))
-      .then(staffResponse => {
-        let users = staffResponse.data.users;
-        let choices = users
-          ? users.map(u => {
-            return { key: u.id, description: `${u.firstName} ${u.lastName}` };
-          })
-          : [];
-        setStaffSearchResults(choices);
-      })
-      .catch(error => {
-        Toast(error.message, "error");
-      });
-  }, [staffSearchText]);
-
-  /**
-   * Handle staff search input
-   * @param {*} event
-   */
-  const handleStaffSearch = (event) => {
-    const { value } = event.target;
-    if(!value || value.length === 0) {
-      setStaffSearchResults([]);
-      setStaffSearchText("");
-    } else {
-      setStaffSearchText(value);
-    }
-  };
-
-  /**
-   * Handle change in staff selection of search panel
-   * @param {*} selectedChoice
-   */
-  const handleChangestaffSelection = (selectedChoice) => {
-    setStaffSelection(selectedChoice);
-  };
 
   useEffect(() => {
     axios.get("/api/tenants", makeAuthHeaders(context))
@@ -81,7 +36,7 @@ export const AddTicket = () => {
   }, [tenantSearchText]);
 
   /**
-   * Handle staff search input
+   * Handle tenant search input
    * @param {*} event
    */
   const handleTenantSearch = (event) => {
@@ -141,7 +96,6 @@ export const AddTicket = () => {
     validateData()
       .then( () => {
         var data = {
-          assignedUserID: (staffSelection && staffSelection.length > 0) ? staffSelection[0].key : null,
           issue: issueText,
           senderID: context.user.identity,
           status: "New",
@@ -210,27 +164,7 @@ export const AddTicket = () => {
               <label htmlFor="low">Low</label>
             </div>
           </div>
-          <div className="form-section">
-            <h2 className="section-title">ASSIGN JOIN STAFF</h2>
-            <div className="typeahead-section">
-              <SearchPanel
-                chips
-                choices={staffSearchResults}
-                clearLabel="Clear search text"
-                onChange={handleStaffSearch}
-                onClear={handleStaffSearch}
-                onSelectionChange={handleChangestaffSelection}
-                placeholder="Search JOIN staff"
-                preSelectedChoices={staffSelection}
-                small
-                value={staffSearchText}
-                variant={SearchPanelVariant.radio}
-                width={400}
-                shadow
-              />
-            </div>
-          </div>
-          <div className="form-section">
+          <div>
             <h2 className="section-title">TENANTS
             {errors.includes("tenant") && <span className='error-message'> * Please select a tenant</span>}</h2>
             <div className="typeahead-section">
