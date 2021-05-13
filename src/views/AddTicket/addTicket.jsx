@@ -143,7 +143,7 @@ export const AddTicket = () => {
         var data = {
           assignedUserID: (staffSelection && staffSelection.length > 0) ? staffSelection[0].key : null,
           issue: issueText,
-          senderID: context.identity,
+          senderID: context.user.identity,
           status: "New",
           tenantID: tenantSelection[0].key,
           urgency: urgency
