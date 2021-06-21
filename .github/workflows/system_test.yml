@@ -1,0 +1,62 @@
+name: System Test
+
+on:
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  system_test:
+
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: dwellingly
+
+    steps:
+      - name: Setup Backend
+        uses: actions/checkout@v2
+        with:
+          path: backend
+          repository: codeforpdx/dwellinglybackend
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - run: pip install --user pipenv
+        working-directory: backend
+
+      - name: Install dependecies
+        run: pipenv run dev-install
+        working-directory: backend
+
+      - name: Setup Database
+        run: pipenv run flask db create
+        working-directory: backend
+
+      - name: Start Server
+        run: pipenv run flask run &
+        working-directory: backend
+      - name: Just wait a sec
+        run: sleep 5s
+        working-directory: backend
+
+      - name: Setup Frontend
+        uses: actions/checkout@v2
+        with:
+          path: frontend
+      - name: Bump max listeners
+        run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+        working-directory: frontend
+      - name: Run System tests
+        uses: cypress-io/github-action@v2
+        with:
+          build: npm run build
+          start: npm start
+          browser: chrome
+          headless: true
+          wait-on: 'http://localhost:3000/'
+          wait-on-timeout: 120
+          working-directory: frontend
