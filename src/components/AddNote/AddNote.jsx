@@ -28,7 +28,7 @@ export default function AddNote({ handleAddNote, toggleShowAddNote, ticketID }) 
           <button
             className="button is-primary is-rounded ml-4 is-small" >
             ADD
-        </button>
+          </button>
         </div>
       </form>
     </div>

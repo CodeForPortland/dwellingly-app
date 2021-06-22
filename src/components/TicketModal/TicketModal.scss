@@ -68,8 +68,6 @@
 
 #scroll-container {
   overflow-y: auto;
-  display: flex;
-  flex-wrap: wrap;
   width: 100%;
   height: 300px;
 }
@@ -84,21 +82,10 @@
   cursor: pointer;
 }
 
-.ticket-card-note {
-  font-weight: normal;
-  width: 100%;
-  max-height: 50px;
-  padding: 1em .3em 1em 1em;
-  border-radius: $border-radius--card;
-  background-color: $lightGray;
+.ticket-note-button-container {
   display: flex;
-  text-align: right;
-  p {
-    color: $darkBlue;
-    font-weight: normal;
-    font-size: 14px;
-  }
 }
+
 
 .ticket-card-notes-list {
   list-style: none;
@@ -113,22 +100,6 @@
   font-weight: normal;
 }
 
-.ticket-card-note-container {
-  max-height: 85px;
-  width: 98%;
-  margin-top: 5px;
-}
-
-.ticket-card-note-header-row {
-  padding-bottom: 30px;
-  font-size: 14px;
-  width: 100%;
-}
-
-.ticket-card-note-header {
-  color: $mediumGray;
-  font-weight: normal;
-}
 
 #in-progress {
   color: $orange;
@@ -136,4 +107,32 @@
 
 .ticket-details-save {
   margin-top: 25px;
+}
+
+.rounded {
+  margin-left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+  border: $darkGray;
+  border-radius: 50%;
+  background-color: $darkGray;
+  cursor: pointer;
+  .icon {
+    font-size: 12px;
+    color: $white;
+  }
+}
+
+.rounded--is-editing {
+  @extend .rounded;
+  border: $blue;
+  background-color: $blue;
+  cursor: pointer;
+  .icon {
+    font-size: 12px;
+    color: $white;
+  }
 }

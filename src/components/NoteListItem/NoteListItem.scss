@@ -1,0 +1,90 @@
+@import "../../scss/variables.scss";
+@import "../card/Card.scss";
+
+.ticket-card-note-container {
+  // max-height: 85px;
+  width: 98%;
+  margin-top: 5px;
+}
+
+.ticket-card-note-header-row {
+  padding-bottom: 5px;
+  font-size: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ticket-card-note-header-row-left {
+  display: flex;
+}
+
+.ticket-card-note-header {
+  color: $mediumGray;
+  font-weight: normal;
+}
+
+.ticket-card-note {
+  font-weight: normal;
+  width: 100%;
+  padding: 1em .3em 1em 1em;
+  border-radius: $border-radius--card;
+  background-color: $lightGray;
+  display: flex;
+  text-align: left;
+  p {
+    color: $darkBlue;
+    font-weight: normal;
+    font-size: 14px;
+  }
+}
+
+.ticket-card-input{
+  font-weight: normal;
+  width: 100%;
+  max-height: 50px;
+  padding: 1em .3em 1em 1em;
+  border-radius: $border-radius--card;
+  background-color: $lightGray;
+  display: flex;
+  color: $darkBlue;
+  font-weight: normal;
+  font-size: 14px;
+  outline: none;
+}
+
+.ticket-card-note-header-buttons {
+  display: flex;
+  margin-right: 5px;
+}
+
+.mini-rounded {
+  margin-left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border: $darkGray;
+  border-radius: 50%;
+  background-color: $darkGray;
+  cursor: pointer;
+  .icon {
+    font-size: 9px;
+    color: $white;
+  }
+}
+
+.mini-rounded--is-editing {
+  @extend .mini-rounded;
+  border: $blue;
+  background-color: $blue;
+}
+
+.note-text-save{
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  justify-content:flex-end;
+}
+
