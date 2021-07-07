@@ -6,60 +6,52 @@ import * as axios from 'axios';
 import Search from '../../components/Search';
 import { ShowHideSwitch } from '../../components/ShowHideSwitch';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { faArchive } from '@fortawesome/free-solid-svg-icons';
 import Toast from '../../utils/toast';
 import Icon from '../../components/icon/Icon';
 import Modal from '../../components/Modal';
-
+import { columns, mobileColumns } from './propertiesTableComponents';
+import { useMediaQueries } from '@react-hook/media-query';
 import './properties.scss';
 
-const makeAuthHeaders = ({ user }) => ({ headers: { 'Authorization': `Bearer ${user.accessJwt}` } });
 
-const columns = [{
-  dataField: 'name',
-  formatter: (cell, row, rowIndex, formatExtraData) => {
+const expandRow = isSmallScreen => ({
+  renderer: row => (
+    <div>
+      <label for="property-managers">
+        Property Managers
+      </label>
+      <p id="property-managers">{row.propertyManagerNames}</p>
+
+      <br />
+      <label for="created-at">
+        Added On
+      </label>
+      <p id="created-at">{row.created_at}</p>
+
+    </div>
+  ),
+  showExpandColumn: isSmallScreen ? true : false,
+  expandColumnRenderer: ({ expanded }) => {
+    if(expanded) {
+      return (
+        <FontAwesomeIcon
+          className="button__envelope-icon mr-3"
+          icon={faChevronDown}
+        />
+      );
+    }
     return (
-      <Link key={row.id} to={`/manage/properties/${row.id}`}>
-        {row.name}
-      </Link>
+      <FontAwesomeIcon
+        className="button__envelope-icon mr-3"
+        icon={faChevronRight}
+      />
     );
-  },
-  text: 'Name',
-  sort: true,
-  headerStyle: () => {
-    return { width: "20%" };
+  }
+});
 
-  }
-}, {
-  dataField: 'propertyManagerNames',
-  text: 'Property Managers',
-  sort: true,
-  headerStyle: () => {
-    return { width: "20%" };
-  }
-}, {
-  dataField: 'address',
-  text: 'Address',
-  sort: true,
-  headerStyle: () => {
-    return { width: "20%" };
-  }
-}, {
-  dataField: 'totalTenants',
-  text: 'Tenants',
-  sort: true,
-  headerStyle: () => {
-    return { width: "10%" };
-  }
-}, {
-  dataField: 'created_at',
-  text: 'Added On',
-  sort: true,
-  headerStyle: () => {
-    return { width: "10%" };
-  }
-}];
-
+const makeAuthHeaders = ({ user }) => ({ headers: { 'Authorization': `Bearer ${user.accessJwt}` } });
 
 const getDisplayProperties = (properties, showArchived) => properties.filter(p => showArchived || !p.archived);
 
@@ -72,7 +64,6 @@ const formatPropertyData = (properties) => properties.map(p => ({
   totalTenants: p.tenantIDs && p.tenantIDs.length,
   created_at: p.created_at
 }));
-
 
 export const Properties = () => {
   const userContext = useContext(UserContext);
@@ -88,8 +79,13 @@ export const Properties = () => {
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleToggleArchived = () => { 
-    const newShowArchived = !showArchived
+  const { matchesAll: isSmallScreen } = useMediaQueries({
+    screen: 'screen',
+    width: `(max-width: 950px)`
+  });
+
+  const handleToggleArchived = () => {
+    const newShowArchived = !showArchived;
     setShowArchived(newShowArchived);
     setDisplayProperties(getDisplayProperties(searchedProperties, newShowArchived));
   };
@@ -113,7 +109,7 @@ export const Properties = () => {
     axios.get("/api/properties", makeAuthHeaders(userContext))
       .then((response) => {
         const { data: { properties } } = response;
-        const propertyRows = formatPropertyData(properties)
+        const propertyRows = formatPropertyData(properties);
         setAllProperties(propertyRows);
         setSearchedProperties(propertyRows);
         setDisplayProperties(getDisplayProperties(propertyRows, showArchived));
@@ -137,12 +133,12 @@ export const Properties = () => {
       })
       .catch((error) => {
         Toast(error.message, "error");
-      })
-  }
+      });
+  };
 
   const toggleArchiveModal = () => {
     setShowArchiveModal(!showArchiveModal);
-  }
+  };
 
 
   return (
@@ -161,10 +157,10 @@ export const Properties = () => {
             setOutputState={handleSearchOutput}
             placeholderMessage="Search by name, address, or property manager"
           />
-          <ShowHideSwitch labelText="Archived:" isShowState={showArchived} handleToggleChange={handleToggleArchived}/>
+          <ShowHideSwitch labelText="Archived:" isShowState={showArchived} handleToggleChange={handleToggleArchived} />
         </div>
         <div className='bulk-actions-container py-3'>
-          <button 
+          <button
             className={`button is-rounded is-primary ml-3 ${selectedProperties.length && 'is-active-button'}`}
             onClick={toggleArchiveModal}
           >
@@ -185,36 +181,38 @@ export const Properties = () => {
               wrapperClasses='properties-list-wrapper'
               keyField='id'
               data={displayProperties}
-              columns={columns}
+              columns={isSmallScreen ? mobileColumns : columns}
               selectRow={({
                 mode: 'checkbox',
-                clickToSelect: true,
-                onSelect: (row, isSelect) => isSelect? handleSelectRow(row) : handleDeselectRow(row),
-                onSelectAll: (isSelect, rows) => isSelect? handleSelectAll(rows) : handleDeselectAll(rows),
+                clickToSelect: isSmallScreen ? false : true,
+                clickToExpand: isSmallScreen ? true : false,
+                onSelect: (row, isSelect) => isSelect ? handleSelectRow(row) : handleDeselectRow(row),
+                onSelectAll: (isSelect, rows) => isSelect ? handleSelectAll(rows) : handleDeselectAll(rows),
                 sort: true,
                 headerColumnStyle: () => ({ width: "5%" }),
                 nonSelectable: nonSelectableRows,
-                nonSelectableStyle: () => ({color: '#999999'})
+                nonSelectableStyle: () => ({ color: '#999999' })
               })}
               defaultSortDirection="asc"
               bootstrap4={true}
               headerClasses="table-header"
+              expandRow={expandRow(isSmallScreen)}
             />
           }
         </div>
       </div>
-      {showArchiveModal && 
+      {showArchiveModal &&
         <Modal
           titleText={selectedProperties.length > 1 ? "Archive Properties" : "Archive Property"}
           content={
             <div className="content">
               <p>You have selected the following {selectedProperties.length} properties to be archived:</p>
               <ul className="archive-properties-list has-text-weight-bold">
-              {selectedProperties.map(p => (
-                <li>{p.name}</li>
-              ))}
+                {selectedProperties.map(p => (
+                  <li>{p.name}</li>
+                ))}
               </ul>
-              <br/>
+              <br />
               <p>Are you sure you want to archive these properties?</p>
             </div>
           }
@@ -228,4 +226,4 @@ export const Properties = () => {
         />}
     </div>
   );
-}
+};

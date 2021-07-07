@@ -8,20 +8,23 @@ import UserContext from '../../UserContext';
 import useMountEffect from '../../utils/useMountEffect';
 import Toast from '../../utils/toast';
 import Icon from '../../components/icon/Icon';
+import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import Search from "../../components/Search/index";
 import { ShowHideSwitch } from '../../components/ShowHideSwitch';
 import Modal from '../../components/Modal';
-import { columns } from './tenantsFormStructure';
+import { columns, mobileColumns } from './tenantsTableComponents';
+import { mobileWidth } from '../../constants/index.js';
+import { useMediaQueries } from '@react-hook/media-query';
 import './tenants.scss';
 
 const makeAuthHeaders = ({ user }) => ({ headers: { 'Authorization': `Bearer ${user.accessJwt}` } });
 
 const addPropertyNames = ((tenants, allProperties) => {
   return tenants.map(tenant => {
-    if (tenant.lease) {
+    if(tenant.lease) {
       const propertyIndex = allProperties.findIndex(property =>
         property.id === tenant.lease.propertyID);
-      tenant.propertyName = allProperties[propertyIndex].name
+      tenant.propertyName = allProperties[propertyIndex].name;
     }
     return tenant;
   });
@@ -30,16 +33,16 @@ const addPropertyNames = ((tenants, allProperties) => {
 const formatTenantData = tenants => tenants.map(tenant => {
   const { id, lease, phone, fullName, archived } = tenant;
   const staff = tenant.staff.map(staff => {
-    return `${staff.firstName} ${staff.lastName}`
+    return `${staff.firstName} ${staff.lastName}`;
   });
   return { id, lease, phone, fullName, staff, archived };
-})
+});
 
 const sortTenantData = tenants => tenants.sort((a, b) => {
-  if (a.fullName < b.fullName) {
+  if(a.fullName < b.fullName) {
     return -1;
   }
-  if (a.fullName > b.fullName) {
+  if(a.fullName > b.fullName) {
     return 1;
   }
   return 0;
@@ -49,6 +52,33 @@ const getDisplayTenants = (tenants, showHoused, showArchived) => {
   return tenants.filter(tenant => (showHoused || tenant.lease) && (showArchived || !tenant.archived));
 };
 
+const expandRow = isSmallScreen => ({
+  renderer: row => (
+    <div>
+      <phone for="phone">
+        Phone
+      </phone>
+      <p id="created-at">{row.phone}</p>
+    </div>
+  ),
+  showExpandColumn: isSmallScreen ? true : false,
+  expandColumnRenderer: ({ expanded }) => {
+    if(expanded) {
+      return (
+        <FontAwesomeIcon
+          className="button__envelope-icon mr-3"
+          icon={faChevronDown}
+        />
+      );
+    }
+    return (
+      <FontAwesomeIcon
+        className="button__envelope-icon mr-3"
+        icon={faChevronRight}
+      />
+    );
+  },
+});
 export function Tenants() {
   const userContext = useContext(UserContext);
 
@@ -63,6 +93,10 @@ export function Tenants() {
   const [checkboxRenderCount, setCheckboxRenderCount] = useState(0);
   const [showArchiveModal, setShowArchiveModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { matchesAll: isSmallScreen } = useMediaQueries({
+    screen: 'screen',
+    width: `(max-width: ${mobileWidth})`
+  });
 
   useMountEffect(() => {
     fetchAllTenants();
@@ -96,53 +130,53 @@ export function Tenants() {
         setIsLoading(false);
         Toast(error.message, "error");
       });
-  }
+  };
 
   const handleToggleHoused = () => {
     setShowHoused(!showHoused);
 
-    if (isSearchActive) {
+    if(isSearchActive) {
       setDisplayTenants(getDisplayTenants(searchedTenants, !showHoused, showArchived));
     } else {
       setDisplayTenants(getDisplayTenants(allTenants, !showHoused, showArchived));
     }
     const newSelectedTentants = getDisplayTenants(selectedTenants, !showHoused, showArchived);
     setSelectedTenants(newSelectedTentants);
-  }
+  };
 
   const handleDisableSearch = () => {
     setSearchedTenants(allTenants);
     setIsSearchActive(false);
     setDisplayTenants(getDisplayTenants(allTenants, showHoused, showArchived));
-  }
+  };
 
   const handleSearchOutput = (output, isTrue) => {
     setSearchedTenants(output);
     setIsSearchActive(isTrue);
     setDisplayTenants(getDisplayTenants(output, showHoused, showArchived));
-  }
+  };
 
   const handleToggleArchived = () => {
     setShowArchived(!showArchived);
 
-    if (isSearchActive) {
+    if(isSearchActive) {
       setDisplayTenants(getDisplayTenants(searchedTenants, showHoused, !showArchived));
     } else {
       setDisplayTenants(getDisplayTenants(allTenants, showHoused, !showArchived));
     }
-  }
+  };
 
   const toggleArchiveModal = () => {
     setShowArchiveModal(!showArchiveModal);
-  }
+  };
 
   const handleSelectRow = (tenant) => {
     setSelectedTenants([...selectedTenants, tenant]);
-  }
+  };
 
   const handleDeselectRow = (tenant) => {
     setSelectedTenants(selectedTenants.filter(sTenant => sTenant.id !== tenant.id));
-  }
+  };
 
   const handleSelectAll = setSelectedTenants;
 
@@ -163,13 +197,13 @@ export function Tenants() {
           console.log(error);
         })
     ))
-    .then( () => {
-      Toast(`Tenants archived successfully`, "success");
-    });
+      .then(() => {
+        Toast(`Tenants archived successfully`, "success");
+      });
 
     fetchAllTenants();
     toggleArchiveModal();
-  }
+  };
 
   return (
     <div className='main-container'>
@@ -217,7 +251,7 @@ export function Tenants() {
         </div>
 
         <div className="tenants-list">
-          { isLoading
+          {isLoading
             ? <Icon
               icon="gear"
               classNames="spinner" />
@@ -225,10 +259,11 @@ export function Tenants() {
               key={`tables-of-tenants--${checkboxRenderCount}`} wrapperClasses='tenants-list-wrapper'
               keyField='id'
               data={displayTenants}
-              columns={columns}
+              columns={isSmallScreen ? mobileColumns : columns}
               selectRow={({
                 mode: 'checkbox',
-                clickToSelect: true,
+                clickToSelect: isSmallScreen ? false : true,
+                clickToExpand: isSmallScreen ? true : false,
                 onSelect: (row, isSelect) => isSelect ? handleSelectRow(row) : handleDeselectRow(row),
                 onSelectAll: (isSelect, rows) => isSelect ? handleSelectAll(rows) : handleDeselectAll(rows),
                 sort: true,
@@ -243,6 +278,7 @@ export function Tenants() {
                 }]}
               bootstrap4={true}
               headerClasses='table-header'
+              expandRow={expandRow(isSmallScreen)}
             />
           }
         </div>
@@ -281,5 +317,5 @@ export function Tenants() {
       }
 
     </div >
-  )
+  );
 };

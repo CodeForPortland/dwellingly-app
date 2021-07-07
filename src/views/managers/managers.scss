@@ -9,9 +9,11 @@
       background-color: $lighterGray;
       border: none;
     }
-    
-    .section-header{
-      padding-bottom: 20px;
+
+    .section-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
     }
 
     .managers-list {
