@@ -60,8 +60,8 @@ export const JoinStaffCard = ({name, phoneNumber, email, tickets, tenants, admin
 				    	Set out of office
 				    </p>
 				    <hr className="card-divider" ></hr>
-				    {tickets && <InfoLabel type="tickets" />}
-				    {tenants && <InfoLabel type="tenants" />}
+				    {<InfoLabel type="tickets" />}
+				    {<InfoLabel type="tenants" />}
 				    <a href='#' className={tinyLinkSpacing}> Reassign </a>
 				</div>
 			</div>

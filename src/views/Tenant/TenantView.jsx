@@ -223,17 +223,14 @@ const Tenant = () => {
     }
   ];
 
-  const STAFF_USER_ROLE = RoleEnum.STAFF;
-
   /**
    * When staff search input text changes, call API to find matching users.
    */
   useEffect(() => {
     const loadStaff = async () => {
-      const staffResponse = await client.post("/api/users/role", {
-        userrole: STAFF_USER_ROLE,
+      const staffResponse = await client.post(`/api/user?r=${RoleEnum.STAFF}`, {
         name: staffSearchText
-      });
+      }, makeAuthHeaders(context));
       const foundStaff = await staffResponse.data;
       const foundStaffChoices = getStaffChoices(foundStaff.users);
       setStaffSearchResults(foundStaffChoices);

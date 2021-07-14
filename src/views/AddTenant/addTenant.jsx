@@ -46,8 +46,7 @@ export const AddTenant = () => {
   useMountEffect(() => getProperties());
 
   useEffect(() => {
-    axios.post("/api/users/role", {
-      userrole: RoleEnum.STAFF,
+    axios.get(`/api/user?r=${RoleEnum.STAFF}`, {
       name: staffSearchText
     })
       .then(staffResponse => {

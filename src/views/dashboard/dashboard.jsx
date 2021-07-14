@@ -36,9 +36,8 @@ export const Dashboard = (props) => {
         if(!unstaffed.length) return;
 
         setUnstaffedTenants(unstaffed);
-        const adminUsersObj = { "userrole": RoleEnum.ADMIN };
         return axios
-          .post("/api/users/role", adminUsersObj, makeAuthHeaders(userContext))
+          .get(`/api/user?r=${RoleEnum.ADMIN}`, makeAuthHeaders(userContext))
           .then(({ data }) => setStaffList(data.users));
       })
       .catch(error => Toast(error.message, "error"));

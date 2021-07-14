@@ -88,7 +88,7 @@ const Manager = () => {
 
   const updateManager = (payload) => {
     axios
-      .patch(`${process.env.REACT_APP_PROXY}/api/user/${id}`,
+      .patch(`/api/user/${id}`,
         payload, makeAuthHeaders(userContext)
       )
       .then(response => {
@@ -145,7 +145,7 @@ const Manager = () => {
             <div className="section-container">
               <h2 className="secondary-title">PROPERTIES</h2>
               <div className="manager__properties__container">
-                {managerData.properties.map((property) => (
+                {managerData.properties?.map((property) => (
                   <div key={property.id} className="manager__property__tile">
                     <h3 className="manager__property__name">
                       {property.name}
@@ -163,7 +163,7 @@ const Manager = () => {
             </div>
             <div className="manager__tenants">
               <h1 className="section-title">TENANTS</h1>
-              {managerData.tenants.map((tenant) =>
+              {managerData.tenants?.map((tenant) =>
                 <div key={tenant.id} className="columns tenant__form-row">
                   <div className="column is-one-quarter bold tenant__name">
                     {tenant.fullName}

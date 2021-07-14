@@ -97,18 +97,9 @@ const convertManagersDataForTable = (managersArray) => {
   return convertedManagers;
 };
 
-const payload = {
-  userrole: `${roleEnum.PROPERTY_MANAGER}`
-};
-
-const makeHeader = (context) => {
-  return { Authorization: `Bearer ${context.user.accessJwt}` };
-};
-
 const getManagers = (header, storeInState, updateLoading) => {
   axios
-    .post(`${process.env.REACT_APP_PROXY}/api/users/role`, 
-    payload, 
+    .get(`/api/user?r=${roleEnum.PROPERTY_MANAGER}`,
     header
     )
     .then((response) => {
@@ -123,16 +114,17 @@ const getManagers = (header, storeInState, updateLoading) => {
     });
 };
 
+const makeAuthHeaders = ({ user }) => ({ headers: { 'Authorization': `Bearer ${user.accessJwt}` } });
+
 const Managers = () => {
   const [managersData, setManagersData] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const retrievedUserContext = useContext(UserContext);
-  const axiosHeader = makeHeader(retrievedUserContext);
+  const context = useContext(UserContext);
   
   useEffect(() => {
     setIsLoading(true);
-    getManagers(axiosHeader, setManagersData, setIsLoading);
+    getManagers(makeAuthHeaders(context), setManagersData, setIsLoading);
   }, []);
 
   return (
